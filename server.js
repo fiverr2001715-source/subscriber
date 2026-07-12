@@ -5,6 +5,9 @@
 // 1. كيتحقق من هوية المستخدم عبر Telegram (initData) بشكل آمن.
 // 2. كيحفظ المستخدمين، القنوات، النقاط، البلاغات فقاعدة بيانات SQLite.
 // 3. كيعطي "endpoints" (عناوين) للواجهة (Frontend) باش تتواصل معاهم.
+// 4. كيعطي صفحة عرض عامة (landing.html) فـ "/" باش تبان لأي زائر عادي
+//    (بما فيهم بوتات التحقق ديال شركات الإعلانات بحال Monetag)،
+//    والتطبيق الحقيقي (Mini App) بقى فـ "/app" باش يفتح غير من داخل Telegram.
 //
 // قبل ما ترفعو لـ Railway:
 // - ما خاصكش تبدل شي حاجة هنا يدويا، غير خاصك تزيد Variable اسمها
@@ -20,10 +23,25 @@ const path = require('path');
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public'))); // إلا حطيتي الواجهة فمجلد public
+app.use(express.static(path.join(__dirname, 'public'))); // إلا حطيتي شي ملفات إضافية فمجلد public
+
+// ============================================================
+// صفحة العرض العامة (Landing Page) — "/"
+// هاذي الصفحة كتبان لأي زائر عادي (متصفح، بوت تحقق ديال Monetag، إلخ)
+// بلا ما تتطلب Telegram. هنا خاصك تحط سكريبت Monetag فـ landing.html.
+// ============================================================
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'landing.html'));
+});
+
+// ============================================================
+// التطبيق الحقيقي (Telegram Mini App) — "/app"
+// هاد الرابط بالضبط (مع /app) هو لي خاصك تحطو فـ BotFather فخطوة /newapp
+// ============================================================
+app.get('/app', (req, res) => {
   res.sendFile(path.join(__dirname, 'sub-exchange-app.html'));
 });
+
 const PORT = process.env.PORT || 3000;
 const BOT_TOKEN = process.env.BOT_TOKEN; // خاصو يكون معرف فـ Railway Variables
 
