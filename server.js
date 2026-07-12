@@ -186,7 +186,7 @@ app.get('/api/me', requireTelegramAuth, (req, res) => {
   res.json({ user, channels: myChannels });
 });
 
-// تسجيل قناة جديدة (الأولى مجانية بحد أقصى 30، الباقي بالنقاط)
+// تسجيل قناة جديدة (الأولى مجانية بحد أقصى 1000، الباقي بالنقاط)
 app.post('/api/register-channel', requireTelegramAuth, (req, res) => {
   const { platform, url } = req.body;
   let { target } = req.body;
@@ -199,9 +199,9 @@ app.post('/api/register-channel', requireTelegramAuth, (req, res) => {
   const user = db.prepare('SELECT points FROM users WHERE id = ?').get(req.userId);
 
   if (existingCount === 0) {
-    // القناة الأولى: مجانية، حد أقصى 30
+    // القناة الأولى: مجانية، حد أقصى 1000
     if (!target || target < 1) target = 1;
-    if (target > 30) target = 30;
+    if (target > 1000) target = 1000;
   } else {
     // القنوات التالية: بالنقاط
     if (!target || target < 1) return res.status(400).json({ error: 'حدد عدد مشتركين صحيح' });
