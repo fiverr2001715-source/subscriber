@@ -151,7 +151,7 @@
 
   <div class="panel" id="onboardPanel" style="display:none">
     <h2>ضيف قناتك الأولى</h2>
-    <div class="sub">القناة الأولى مجانية — اختار الهدف ديالك (بحد أقصى 30 مشترك فالباقة المجانية).</div>
+    <div class="sub">القناة الأولى مجانية — اختار الهدف ديالك (بحد أقصى 1000 مشترك فالباقة المجانية).</div>
     <div class="row">
       <div><label>المنصة</label>
         <select id="ob_platform">
@@ -159,10 +159,15 @@
           <option>Telegram</option>(X (تويتر</option><option>Facebook</option><option>Snapchat</option>
         </select>
       </div>
-      <div><label>رابط القناة</label><input type="text" id="ob_url" placeholder="https://..." /></div>
+      <div><label>رابط القناة</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="ob_url" placeholder="https://..." style="flex:1" />
+          <button type="button" class="btn btn-ghost" onclick="pasteFromClipboard('ob_url')">لصق</button>
+        </div>
+      </div>
     </div>
     <div class="row">
-      <div><label>عدد المشتركين المطلوب (حد أقصى 30)</label><input type="number" id="ob_target" value="20" min="1" max="30" /></div>
+      <div><label>عدد المشتركين المطلوب (حد أقصى 1000)</label><input type="number" id="ob_target" value="20" min="1" max="1000" /></div>
       <div style="display:flex;align-items:flex-end"><button class="btn btn-gold btn-block" onclick="addFirstChannel()">إضافة القناة والبدء</button></div>
     </div>
   </div>
@@ -190,7 +195,12 @@
               <option>Telegram</option>(X (تويتر</option><option>Facebook</option><option>Snapchat</option>
             </select>
           </div>
-          <div><label>رابط القناة</label><input type="text" id="new_url" placeholder="https://..." /></div>
+          <div><label>رابط القناة</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="new_url" placeholder="https://..." style="flex:1" />
+              <button type="button" class="btn btn-ghost" onclick="pasteFromClipboard('new_url')">لصق</button>
+            </div>
+          </div>
         </div>
         <div class="row">
           <div><label>عدد المشتركين المطلوب (= تكلفة بالنقاط)</label><input type="number" id="new_target" value="10" min="1" /></div>
@@ -273,6 +283,36 @@ function showToast(msg){
 // الاتصال بالـ Backend — كل طلب كيبعت initData ديال Telegram
 // باش السيرفر يتحقق من هوية المستخدم
 // ============================================================
+// ============================================================
+// لصق رابط من الحافظة (Clipboard) — بعض متصفحات Telegram الداخلية
+// كتمنع اللصق العادي (Ctrl+V / اضغط مطول) فخانات الكتابة، فكنستعملو
+// الـ API الرسمي ديال Telegram WebApp لقراءة الحافظة مباشرة.
+// ============================================================
+function pasteFromClipboard(inputId){
+  const input = document.getElementById(inputId);
+  const tg = window.Telegram && window.Telegram.WebApp;
+
+  if(tg && typeof tg.readTextFromClipboard === 'function'){
+    tg.readTextFromClipboard((text) => {
+      if(text){ input.value = text; }
+      else { showToast('الحافظة فارغة أو التطبيق ديالك ما كيدعمش هاد الميزة، جرب لصق يدوي'); }
+    });
+    return;
+  }
+
+  // fallback: متصفح عادي (خارج Telegram) كيدعم navigator.clipboard
+  if(navigator.clipboard && navigator.clipboard.readText){
+    navigator.clipboard.readText().then(text => {
+      if(text) input.value = text;
+    }).catch(() => {
+      showToast('ما قدرتش نلصق تلقائيا، جرب اضغط مطول على الخانة واختار "لصق"');
+    });
+    return;
+  }
+
+  showToast('اللصق التلقائي ماشي متاح هنا، جرب اضغط مطول على الخانة واختار "لصق"');
+}
+
 function getInitData(){
   try{
     return (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) || '';
@@ -361,7 +401,7 @@ async function addFirstChannel(){
   const err = validateChannelUrl(platform, url);
   if(err){ showToast(err); return; }
   if(!target || target < 1) target = 1;
-  if(target > 30) target = 30;
+  if(target > 1000) target = 1000;
 
   try{
     await api('/api/register-channel', 'POST', { platform, url, target });
