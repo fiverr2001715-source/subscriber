@@ -21,7 +21,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public'))); // إلا حطيتي الواجهة فمجلد public
-
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'sub-exchange-app.html'));
+});
 const PORT = process.env.PORT || 3000;
 const BOT_TOKEN = process.env.BOT_TOKEN; // خاصو يكون معرف فـ Railway Variables
 
