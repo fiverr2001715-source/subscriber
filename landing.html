@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>تبادل — منصة تبادل المشتركين</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<!--
+  ================= دليل ربط Monetag =================
+  1) سجّل حساب على Monetag واختر موقعك (استعمل رابط هاد الصفحة نفسها،
+     يعني الرابط الرئيسي ديال Railway، ماشي /app).
+  2) من لوحة التحكم انسخ سكريبت الإعلان (In-Page Push, Banner, إلخ)
+     وألصقه هنا داخل <head> بدل هذا التعليق. مثال شكل عام:
+     <script src="//REPLACE-WITH-YOUR-MONETAG-SCRIPT-URL" data-zone="REPLACE_ZONE_ID" async></script>
+  =====================================================
+-->
+
+<style>
+  :root{
+    --bg: #0F262B;
+    --bg-soft: #163038;
+    --surface: #1B3B44;
+    --gold: #D8A24A;
+    --gold-soft: #E9C888;
+    --coral: #E8674A;
+    --text: #F2EFE6;
+    --muted: #9FB4B0;
+    --line: rgba(216,162,74,0.18);
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;color:var(--text);font-family:'Tajawal',sans-serif;}
+  body{background: radial-gradient(1200px 600px at 80% -10%, #1a3c44 0%, var(--bg) 55%);min-height:100vh;}
+  .wrap{max-width:720px;margin:0 auto;padding:40px 18px 60px;}
+  h1,h2,h3{font-family:'Amiri',serif;margin:0;}
+
+  header.top{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:30px;}
+  .mark{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--gold),var(--coral));display:flex;align-items:center;justify-content:center;font-family:'Amiri',serif;font-weight:700;color:#1B0F06;font-size:22px;}
+  .name{font-family:'Amiri',serif;font-size:26px;}
+
+  .hero{text-align:center;padding:10px 6px 6px;}
+  .hero h1{font-size:clamp(24px,4vw,34px);line-height:1.4;}
+  .hero h1 em{font-style:normal;color:var(--gold-soft);}
+  .hero p{color:var(--muted);margin:14px auto 0;max-width:520px;font-size:15px;line-height:1.8;}
+
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:34px;}
+  .step{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;}
+  .step .n{font-family:'Amiri',serif;color:var(--gold);font-size:22px;}
+  .step h3{font-size:15px;margin-top:6px;}
+  .step p{color:var(--muted);font-size:13px;margin:6px 0 0;line-height:1.6;}
+  @media (max-width:680px){.steps{grid-template-columns:1fr;}}
+
+  .cta{text-align:center;margin-top:40px;}
+  .btn{display:inline-block;text-decoration:none;background:linear-gradient(135deg,var(--gold),#c98a34);color:#1B0F06;font-weight:900;padding:16px 34px;border-radius:12px;font-size:16px;}
+
+  footer.note{text-align:center;color:var(--muted);font-size:12px;margin-top:50px;line-height:1.8;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="mark">ت</div>
+    <div class="name">تبادل</div>
+  </header>
+
+  <div class="hero">
+    <h1>اجمع نقاط بمتابعة <em>قنوات آخرين</em><br>وبادلها بـ <em>مشتركين حقيقيين</em> لقناتك</h1>
+    <p>منصة "تبادل" كتخليك تجمع نقاط بمتابعة قنوات آخرين على تيك توك، انستغرام، يوتيوب، تيليغرام وغيرها. كل نقطة كتقدر تبادلها بمشترك جديد فقناتك أنت.</p>
+  </div>
+
+  <div class="steps">
+    <div class="step"><div class="n">01</div><h3>قدّم قناتك</h3><p>ضيف رابط القناة ديالك والمنصة، وحدد عدد المشتركين لي بغيتي.</p></div>
+    <div class="step"><div class="n">02</div><h3>جمع نقاط</h3><p>تابع قنوات الآخرين فالمنصة، كل متابعة = نقطة وحدة فرصيدك.</p></div>
+    <div class="step"><div class="n">03</div><h3>بادلها بمشتركين</h3><p>نقاطك كتستعمل باش قناتك تبان لآخرين ويتابعوها بدورهم.</p></div>
+  </div>
+
+  <div class="cta">
+    <a class="btn" href="https://t.me/subscriber444bot/tabadul">افتح التطبيق داخل Telegram</a>
+  </div>
+
+  <footer class="note">
+    تطبيق "تبادل" هو Telegram Mini App، وكيخدم فقط من داخل تطبيق Telegram.<br>
+    تنبيه: تبادل الاشتراكات بهاد الطريقة قد يخالف شروط استخدام بعض منصات التواصل الاجتماعي.
+  </footer>
+</div>
+</body>
+</html>
