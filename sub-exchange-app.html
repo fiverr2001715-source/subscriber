@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src='//libtl.com/sdk.js' data-zone='11277143' data-sdk='show_11277143'></script>
 
 <!--
   ================= دليل ربط Monetag =================
@@ -541,13 +542,30 @@ async function bumpTarget(id){
   renderMine();
 }
 
-// ===== Monetag placeholder =====
-// TODO: بدل هاد المحتوى بالنداء الحقيقي لدالة Monetag (مثلا show_XXXXXXX())
-// لي كيعطيوها ليك فلوحة التحكم بعد ما تربط Zone ID.
-// ملاحظة: باش هاد الميزة تخدم بجدية، خاصك تزيد endpoint فالسيرفر (مثلا /api/watch-ad)
-// كيزيد نقطة للمستخدم بعد التحقق أن الإعلان كمل بجدية (Monetag كتعطي server-to-server callback).
+// ===== Monetag =====
+// كنستعملو الدالة show_11277143() لي كتعطيها Monetag، كترجع Promise
+// كيتحل (resolve) غير إلا المستخدم شاف الإعلان كامل بجدية.
+// بعد ما يتحل، كنبعتو للسيرفر باش يزيد نقطة فرصيد المستخدم.
+let watchingAd = false;
 async function watchAdForPoints(){
-  showToast('هاد الميزة باقي كتنتظر ربط Monetag + endpoint فالسيرفر');
+  if(watchingAd) return;
+  if(typeof show_11277143 !== 'function'){
+    showToast('الإعلان ماشي جاهز دابا، عاود جرب من بعد');
+    return;
+  }
+  watchingAd = true;
+  try{
+    showToast('كيتم تحميل الإعلان...');
+    await show_11277143(); // كيتسنى حتى المستخدم يشوف الإعلان كامل
+    const r = await api('/api/watch-ad', 'POST');
+    user.points = r.points;
+    updateBalance();
+    showToast('+1 نقطة! تضافت لرصيدك');
+  }catch(e){
+    showToast(e.message || 'ما كملتيش مشاهدة الإعلان، جرب مرة أخرى');
+  }finally{
+    watchingAd = false;
+  }
 }
 
 init();
