@@ -90,6 +90,12 @@ db.exec(`
     created_at INTEGER NOT NULL,
     UNIQUE(channel_id, reporter_id)
   );
+
+  CREATE TABLE IF NOT EXISTS ad_views (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+  );
 `);
 
 // ============================================================
@@ -300,6 +306,38 @@ app.post('/api/report', requireTelegramAuth, (req, res) => {
   }
 
   res.json({ ok: true, reportCount, frozen: reportCount >= REPORT_THRESHOLD });
+});
+
+// مكافأة مشاهدة إعلان (Monetag) — نقطة وحدة، مع حماية بسيطة من الاستغلال:
+// - كولداون 20 ثانية بين كل مشاهدة وأخرى لنفس المستخدم
+// - حد أقصى 20 مشاهدة فاليوم لكل مستخدم
+// ملاحظة: هادي حماية أساسية بلا تحقق server-to-server من Monetag،
+// لأن هاد الـ SDK كيخدم client-side فقط (بلا postback رسمي فهاد الإصدار).
+const AD_COOLDOWN_MS = 20 * 1000;
+const AD_DAILY_LIMIT = 20;
+
+app.post('/api/watch-ad', requireTelegramAuth, (req, res) => {
+  const now = Date.now();
+  const dayAgo = now - 24 * 60 * 60 * 1000;
+
+  const last = db.prepare('SELECT created_at FROM ad_views WHERE user_id = ? ORDER BY created_at DESC LIMIT 1').get(req.userId);
+  if (last && now - last.created_at < AD_COOLDOWN_MS) {
+    return res.status(429).json({ error: 'تسنى شوية قبل ما تشوف إعلان آخر' });
+  }
+
+  const countToday = db.prepare('SELECT COUNT(*) AS c FROM ad_views WHERE user_id = ? AND created_at > ?').get(req.userId, dayAgo).c;
+  if (countToday >= AD_DAILY_LIMIT) {
+    return res.status(429).json({ error: 'وصلتي للحد الأقصى ديال الإعلانات اليوم، عاود غدا' });
+  }
+
+  const tx = db.transaction(() => {
+    db.prepare('INSERT INTO ad_views (user_id, created_at) VALUES (?, ?)').run(req.userId, now);
+    db.prepare('UPDATE users SET points = points + 1 WHERE id = ?').run(req.userId);
+  });
+  tx();
+
+  const user = db.prepare('SELECT points FROM users WHERE id = ?').get(req.userId);
+  res.json({ ok: true, points: user.points });
 });
 
 // فحص صحة السيرفر (تقدر تفتحو فالمتصفح باش تتأكد أن السيرفر خدام)
